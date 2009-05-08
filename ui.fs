@@ -8,9 +8,10 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 
+open Resource
 open Breakout
 
-type Ui() =
+type Ui(gd : GraphicsDevice, resource) =
     let mutable DPad = GamePad.GetState(PlayerIndex.One).DPad
     let mutable DPadOld = DPad
     let mutable buttons = GamePad.GetState(PlayerIndex.One).Buttons
@@ -22,14 +23,14 @@ type Ui() =
     let mutable strobeTick = 1;
     let mutable strobeVelocity = 10;
 
-    let mutable stateMenu = true
+    let mutable stateMenu = false
 
     member this.Initialize() =
-        stateMenu <- false
-        breakout <- Breakout()
+        breakout <- Breakout(resource)
         breakout.Initialize()
         
-    member this.Draw(gd, (spriteBatch:SpriteBatch), (effects:Dictionary<string, Effect>), (font:SpriteFont), gameTime) =
+    member this.Draw(gameTime) =
+        let spriteBatch = resource.SpriteBatch.["hud"]
         if stateMenu then
             spriteBatch.Begin();
             
@@ -39,14 +40,17 @@ type Ui() =
             let strobe = Color((float32)(strobeTick % 100 + 150) / 255.0f, 0.2f, 0.2f)
             
             let mutable color = Color.Green
+            let font = resource.Fonts.["arial"]
+            
             if menu = 0 then color <- strobe else color <- Color.Red
             spriteBatch.DrawString(font, "Start Game", new Vector2(50.0f, 50.0f), color);
+            
             if menu = 1 then color <- strobe else color <- Color.Red
             spriteBatch.DrawString(font, "Quit Game", new Vector2(50.0f, 80.0f), color);
             
             spriteBatch.End();
         
-        breakout.Draw(gd, spriteBatch, effects, font, gameTime)
+        breakout.Draw(gd, gameTime)
 
     member this.Update(gameTime) =
         if stateMenu then
@@ -64,7 +68,7 @@ type Ui() =
             if (buttons.A = ButtonState.Pressed) then
                 if menu = 0 then
                     stateMenu <- false
-                    breakout <- Breakout()
+                    breakout <- Breakout(resource)
                     breakout.Initialize()
                 if menu = 1 then
                     exitFlag <- true

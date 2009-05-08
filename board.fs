@@ -2,30 +2,41 @@
 
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
+open FarseerGames.FarseerPhysics;
+open FarseerGames.FarseerPhysics.Collisions
 
-open Piece
+open Resource
+open Object
 open Shape
 
-type Board(width:int, height:int) =
+type Board(resource, width:int, height:int) =
     let mutable pieces = [
-        Piece(0, Vector3(20.0f, 0.0f, 0.0f), Vector3(1.0f, 30.0f, 1.0f), 0.0f, Color.Red);
-        Piece(0, Vector3(-20.0f, 0.0f, 0.0f), Vector3(1.0f, 30.0f, 1.0f), 0.0f, Color.Red);
-        Piece(0, Vector3(0.0f, 30.0f, 0.0f), Vector3(20.0f, 1.0f, 1.0f), 0.0f, Color.Red);
-        Piece(0, Vector3(0.0f, -30.0f, 0.0f), Vector3(20.0f, 1.0f, 1.0f), 0.0f, Color.Red);
+        Object(resource.Models.["cube"], Square, Vector2( 20.0f,  0.0f), Vector2(1.0f , 30.0f), 0.0f, Color.Red, Static, CollisionCategory.Cat4, CollisionCategory.All, Outline);
+        Object(resource.Models.["cube"], Square, Vector2(-20.0f,  0.0f), Vector2(1.0f , 30.0f), 0.0f, Color.Red, Static, CollisionCategory.Cat4, CollisionCategory.All, Outline);
+        Object(resource.Models.["cube"], Square, Vector2(  0.0f, 30.0f), Vector2(20.0f,  1.0f), 0.0f, Color.Red, Static, CollisionCategory.Cat5, ~~~CollisionCategory.Cat2, Outline);
+        Object(resource.Models.["cube"], Square, Vector2(  0.0f,-30.0f), Vector2(20.0f,  1.0f), 0.0f, Color.Red, Static, CollisionCategory.Cat4, CollisionCategory.All, Outline);
         ]
-    
-    member this.draw(gd, effect) =        
-        pieces |> Seq.iter (fun piece -> piece.getShape().draw(gd, effect))
+
+    member this.draw(gd, effect) =
+        pieces |> Seq.iter (fun obj -> obj.draw(gd, effect))
+
+    member this.draw() =
+        pieces |> Seq.iter (fun obj -> obj.draw())
             
-    member this.clip(piece : Piece) =
-        piece.clip(pieces)
-            
-//    member this.normal(collisions:(Piece*Vector3*Vector3) list) =
-//        let n = float32 collisions.Length
-//        collisions
-//        |> List.map (fun(piece, collision, normal) -> normal)
-//        |> List.fold_left (+) (Vector3(0.0f, 0.0f, 0.f))
-//        |> (fun v -> Vector3(v.X / n, v.Y / n, v.Z / n))
+    member this.getPieces() =
+        pieces
 
     member this.add(piece) =
         pieces <- piece :: pieces
+        
+    member this.update() =
+        pieces <- pieces |> List.filter (fun p -> not(p.needsDisposing()))
+    
+    member this.addToSimulation(simulation :PhysicsSimulator) =
+        pieces
+        |> List.iter (fun obj -> obj.addToSimulation(simulation))
+        
+    member this.remove(geom) =
+        let piece = pieces |> List.find (fun obj -> obj.Geometry = geom)
+        piece.startFade()
+        
