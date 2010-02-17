@@ -1,19 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <PlatformTarget>x86</PlatformTarget>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{99602721-1bd1-49a6-afa3-9c248595c687}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Knockout</RootNamespace>
     <AssemblyName>Knockout</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Name>Knockout</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,8 +24,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
+    <StartWorkingDirectory>C:\My Dropbox\hope\bin\Debug\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,30 +36,32 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="primative.fs" />
-    <Compile Include="shape.fs" />
-    <Compile Include="piece.fs" />
-    <Compile Include="player.fs" />
-    <Compile Include="board.fs" />
-    <Compile Include="breakout.fs" />
-    <Compile Include="ui.fs" />
-    <Compile Include="entry_point.fs" />
+    <Compile Include="Resource.fs" />
+    <Compile Include="UserInput.fs" />
+    <Compile Include="Primative.fs" />
+    <Compile Include="Shape.fs" />
+    <Compile Include="ModelGroup.fs" />
+    <Compile Include="Entity.fs" />
+    <Compile Include="Player.fs" />
+    <Compile Include="Board.fs" />
+    <Compile Include="Breakout.fs" />
+    <Compile Include="Ui.fs" />
+    <Compile Include="Entry_point.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d">
-      <Name>Microsoft.Xna.Framework</Name>
-      <AssemblyName>Microsoft.Xna.Framework.dll</AssemblyName>
+    <Reference Include="FarseerProject">
+      <HintPath>externals\FarseerProject.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d">
-      <Name>Microsoft.Xna.Framework.Game</Name>
-      <AssemblyName>Microsoft.Xna.Framework.Game.dll</AssemblyName>
-    </Reference>
+    <Reference Include="FSharp.Core" />
+    <Reference Include="Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d" />
+    <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
+  <Import Project="$(ProgramFiles)\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">

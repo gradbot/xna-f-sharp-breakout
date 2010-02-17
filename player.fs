@@ -1,4 +1,4 @@
-﻿#light
+﻿namespace Breakout
 
 open System;
 
@@ -6,10 +6,6 @@ open Microsoft.Xna.Framework;
 open Microsoft.Xna.Framework.Input;
 open Microsoft.Xna.Framework.Graphics;
 open FarseerGames.FarseerPhysics;
-
-open Resource
-open Shape
-open Object
 
 type Player(resource) =
     let mutable position = Vector2(0.0f, -25.0f)
@@ -19,19 +15,16 @@ type Player(resource) =
     let mutable buttonsOld = buttons
     let mutable buttonDelay = 0
     let random = Random()
-    let obj = Object(resource.Models.["cube"], Arc, position, Vector2(5.0f, 1.0f), 0.0f, Color.Green, Static, CollisionCategory.Cat4)
+    let ent = Entity(resource.Models.["cube"], Arc, position, Vector2(5.0f, 1.0f), 0.0f, Color.Green, Static, CollisionCategory.Cat4)
     
     do
-        obj.Geometry.CollisionGroup <- 1
+        ent.Geometry.CollisionGroup <- 1
     
-    let PressedOnce(button, oldButton) =
-        (button = ButtonState.Pressed && oldButton <> ButtonState.Pressed)
-
     member this.getPosition() =
         position
         
     member this.getPaddle() =
-        obj
+        ent
 
     member this.updateInput() =
         DPadOld <- DPad
@@ -44,7 +37,7 @@ type Player(resource) =
         if position.X < -15.0f then position.X <- -15.0f
         if position.X > 15.0f then position.X <- 15.0f
         
-        obj.Body.Position <- position
+        ent.Body.Position <- position
 
 //        if (DPad.Down = ButtonState.Pressed) then piece.down()
 //        if (DPad.Up = ButtonState.Pressed) then piece.up()
@@ -61,5 +54,5 @@ type Player(resource) =
 //        if PressedOnce(buttons.A, buttonsOld.A) then piece.rotate(true)
 //        if PressedOnce(buttons.B, buttonsOld.B) then piece.rotate(false)
         
-    member this.restart() =
-        PressedOnce(buttons.Start, buttonsOld.Start)
+    member this.needsRestart() =
+        false

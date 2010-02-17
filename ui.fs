@@ -1,4 +1,4 @@
-﻿#light
+﻿namespace Breakout
 
 open System
 open System.Collections.Generic
@@ -8,22 +8,22 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 
-open Resource
-open Breakout
+type UIState = { 
+    mutable gameStart : bool;
+    mutable mainMenu : bool;
+    mutable exit : bool;
+    }
 
 type Ui(gd : GraphicsDevice, resource) =
-    let mutable DPad = GamePad.GetState(PlayerIndex.One).DPad
-    let mutable DPadOld = DPad
-    let mutable buttons = GamePad.GetState(PlayerIndex.One).Buttons
-    let mutable buttonsOld = buttons
+    let userInput = UserInput(PlayerIndex.One)
+
     let mutable breakout = Unchecked.defaultof<Breakout>
     
-    let mutable exitFlag = false;
     let mutable menu = 0;
     let mutable strobeTick = 1;
     let mutable strobeVelocity = 10;
 
-    let mutable stateMenu = false
+    let mutable state = {gameStart = true; mainMenu = false; exit = false;}
 
     member this.Initialize() =
         breakout <- Breakout(resource)
@@ -31,13 +31,13 @@ type Ui(gd : GraphicsDevice, resource) =
         
     member this.Draw(gameTime) =
         let spriteBatch = resource.SpriteBatch.["hud"]
-        if stateMenu then
+        if state.mainMenu then
             spriteBatch.Begin();
             
             strobeTick <- strobeTick + strobeVelocity
             if strobeTick > 90 then strobeVelocity <- -strobeVelocity
             if strobeTick < 11 then strobeVelocity <- -strobeVelocity
-            let strobe = Color((float32)(strobeTick % 100 + 150) / 255.0f, 0.2f, 0.2f)
+            let strobe = Color(float32 (strobeTick % 100 + 150) / 255.0f, 0.2f, 0.2f)
             
             let mutable color = Color.Green
             let font = resource.Fonts.["arial"]
@@ -53,34 +53,30 @@ type Ui(gd : GraphicsDevice, resource) =
         breakout.Draw(gd, gameTime)
 
     member this.Update(gameTime) =
-        if stateMenu then
-            DPadOld <- DPad
-            buttonsOld <- buttons
-            DPad <- GamePad.GetState(PlayerIndex.One).DPad
-            buttons <- GamePad.GetState(PlayerIndex.One).Buttons
+        if state.mainMenu then
+            userInput.Update()
             
-            let PressedOnce(button, oldButton) =
-                (button = ButtonState.Pressed && oldButton <> ButtonState.Pressed)
-            
-            if PressedOnce(DPad.Up, DPadOld.Up) then menu <- (menu + 1) % 2
-            if PressedOnce(DPad.Down, DPadOld.Down) then menu <- (menu + 1) % 2
-            if (buttons.Back = ButtonState.Pressed) then exitFlag <- true
-            if (buttons.A = ButtonState.Pressed) then
+            if userInput.DpadPressed(DPad.Up) then menu <- (menu + 1) % 2
+            if userInput.DpadPressed(DPad.Down) then menu <- (menu + 1) % 2
+            if userInput.ButtonPressed(Button.Back) then state.exit <- true
+
+            if userInput.ButtonPressed(Button.A) || userInput.KeyPressed(Keys.Enter) then
                 if menu = 0 then
-                    stateMenu <- false
-                    breakout <- Breakout(resource)
-                    breakout.Initialize()
+                    state.mainMenu <- false
+                    if state.gameStart then
+                        state.gameStart <- false
+                    else
+                        breakout <- Breakout(resource)
+                        breakout.Initialize()
+
                 if menu = 1 then
-                    exitFlag <- true
+                    state.exit <- true
         else
             breakout.Update(gameTime)
             if breakout.Dead() then
-                stateMenu <- true
-                DPad <- GamePad.GetState(PlayerIndex.One).DPad
-                buttons <- GamePad.GetState(PlayerIndex.One).Buttons
-                buttonsOld <- buttons
-                DPadOld <- DPad
+                state.mainMenu <- true
+                userInput.Update()
                 menu <- 0
             
     member this.exit() =
-        exitFlag
+        state.exit

@@ -1,10 +1,8 @@
-﻿#light
+﻿namespace Breakout
 
 open Microsoft.Xna.Framework;
 open Microsoft.Xna.Framework.Graphics;
 open FarseerGames.FarseerPhysics.Collisions
-
-open Primative
 
 type ShapeType =
     | Square
@@ -76,7 +74,7 @@ type Shape(shapeType, scale :Vector2, color) =
                         points.[points.Length - 1].Y + position.Y, 
                         0.0f), 
                     color)]
-            |> Seq.to_array
+            |> Seq.toArray
             
         let primitiveType = 
             match shapeType, shapeFill with

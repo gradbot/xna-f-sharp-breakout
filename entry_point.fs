@@ -1,6 +1,4 @@
-﻿#light
-
-open System
+﻿open System
 open System.Collections.Generic
 
 open Microsoft.Xna.Framework
@@ -9,9 +7,7 @@ open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 open Microsoft.Xna.Framework.Audio
 
-open Resource
-open Ui
-open ModelGroup
+open Breakout
 
 type MyGame() as this =
     inherit Game()
